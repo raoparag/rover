@@ -1,0 +1,42 @@
+Design Considerations
+- build as a Spring boot microservice
+- should it have an Restful API or command line only?
+
+APIs
+- create and move multiple rovers
+    api - /rover
+    params - rover[] - {roverId, position(x,y,facing), command}
+    response - list of rovers with their position
+- command line - java –cp target com.test.MarsRoverApp “3,4,N” “f,f,r,f,f”
+
+Entity
+- Position
+    x, y, facing
+- Rover
+    roverId, position
+
+Repository
+- Rover Repository
+    maintain List/map of Rovers
+
+Class Structure
+- RoverController - handles API requests and responses
+- RoverService - holds business logic to move the rover
+- Position & Rover - Pojos for entities
+- RoverRequest - to hold API request
+
+Main Logic
+- execute one command at a time for each rover
+- when executing the command do the below steps
+    - get the new position of the rover after the command is applied
+    - check for collisions with the existing rovers
+    - if no collisions, update the current rover's position
+    - repeat for each rover, each command
+
+Validations
+- multiple rovers present at the same location in the input
+- invalid commands
+- invalid input format
+
+
+
