@@ -7,6 +7,10 @@ Project Contents
 - Unit Tests
 - Functional Tests
 
+Some Extra Features
+- Commands can be provided for multiple rovers at a time. These commands will be executed one at a time for each rover
+- A rover repository gets created which can be continued across multiple API calls and will be taken into collision consideration
+- If a new repository is to be considered for an API call then the startFresh parameter can be used as seen in examples below
 
 To run the Project
 - Clone the project to a folder eg. 'rover'
