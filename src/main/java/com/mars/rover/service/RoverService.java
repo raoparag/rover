@@ -56,7 +56,7 @@ public class RoverService {
                 for (String roverId : roverCommands.keySet()) {
                     if (i < roverCommands.get(roverId).length) {
                         Position p = getNewPosition(roverId, roverCommands.get(roverId)[i]);
-                        checkForCollision(p);
+                        checkForCollision(p, roverId);
                         roverRepo.get(roverId).get().setPosition(p);
                     }
                 }
@@ -68,9 +68,9 @@ public class RoverService {
         return false;
     }
 
-    private void checkForCollision(Position p) {
+    private void checkForCollision(Position p, String currentRoverId) {
         for (Rover rover: roverRepo.getAll()) {
-            if (rover.getPosition().equals(p))
+            if (!rover.getId().equalsIgnoreCase(currentRoverId) && rover.getPosition().isColliding(p))
                 throw new RoverCollisionException("Collision occurred. Rest of the commands aborted.");
         }
     }
@@ -102,7 +102,7 @@ public class RoverService {
     private void checkForCollision(RoverRequest roverRequest) {
         Set<String> positions = new HashSet<>();
         for (RoverRequestSingle request:roverRequest.getRovers()) {
-            String newPosition = request.getX() + "#" + request.getY() + "#" + request.getFacing();
+            String newPosition = request.getX() + "#" + request.getY();
             newPosition = newPosition.toUpperCase();
             if (positions.contains(newPosition)) {
                 throw new RoverException("Collision detected. Request Aborted");

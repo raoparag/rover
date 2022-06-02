@@ -18,23 +18,11 @@ public class Position {
         this.facing = p.getFacing();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean isColliding(Position p) {
+        if (this == p) return true;
+        if (p == null) return false;
 
-        Position position = (Position) o;
-
-        if (x != position.x) return false;
-        if (y != position.y) return false;
-        return facing == position.facing;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = x;
-        result = 31 * result + y;
-        result = 31 * result + (int) facing;
-        return result;
+        if (x != p.x) return false;
+        return y == p.y;
     }
 }
