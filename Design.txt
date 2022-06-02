@@ -5,7 +5,7 @@ Design Considerations
 APIs
 - create and move multiple rovers
     api - /rover
-    params - rover[] - {roverId, position(x,y,facing), command}
+    params - array of {x,y,facing,command}, startFresh (to clean up existing rovers)
     response - list of rovers with their position
 - command line - java –cp target com.test.MarsRoverApp “3,4,N” “f,f,r,f,f”
 
@@ -24,6 +24,7 @@ Class Structure
 - RoverService - holds business logic to move the rover
 - Position & Rover - Pojos for entities
 - RoverRequest - to hold API request
+- RoverException, RoverCollisionException
 
 Main Logic
 - execute one command at a time for each rover
