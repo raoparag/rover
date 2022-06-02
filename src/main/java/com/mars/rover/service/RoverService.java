@@ -1,6 +1,7 @@
 package com.mars.rover.service;
 
 import com.mars.rover.RoverResponse;
+import com.mars.rover.constants.RoverConstants;
 import com.mars.rover.entity.Position;
 import com.mars.rover.entity.Rover;
 import com.mars.rover.exception.RoverCollisionException;
@@ -11,7 +12,6 @@ import com.mars.rover.request.RoverRequestSingle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
 
 @Service
@@ -20,34 +20,22 @@ public class RoverService {
     @Autowired
     private RoverRepo roverRepo;
 
-    private static final Set<String> validCommands = new HashSet<>();
-
-    @PostConstruct
-    public void init() {
-        validCommands.add("N");
-        validCommands.add("S");
-        validCommands.add("E");
-        validCommands.add("W");
-        validCommands.add("F");
-        validCommands.add("B");
-        validCommands.add("R");
-        validCommands.add("L");
-    }
-
     public RoverResponse moveRover(RoverRequest roverRequest, boolean startFresh) {
         validateRequest(roverRequest);
         if (startFresh) roverRepo.init();
         Map<String, String[]> roverCommands = addRoversToRepo(roverRequest);
         boolean collisionDetected = executeCommands(roverCommands);
         RoverResponse roverResponse = new RoverResponse();
-        roverResponse.setRovers(roverRepo.getAll());
+        List<Rover> allRovers = roverRepo.getAll();
+        allRovers.sort(Comparator.comparing(Rover::getName));
+        roverResponse.setRovers(allRovers);
         roverResponse.setCollisionDetected(collisionDetected);
         return roverResponse;
     }
 
     private boolean executeCommands(Map<String, String[]> roverCommands) {
         int maxLengthOfCommands = 0;
-        for (String[] commands: roverCommands.values()) {
+        for (String[] commands : roverCommands.values()) {
             maxLengthOfCommands = Math.max(maxLengthOfCommands, commands.length);
         }
         try {
@@ -69,7 +57,7 @@ public class RoverService {
     }
 
     private void checkForCollision(Position p, String currentRoverId) {
-        for (Rover rover: roverRepo.getAll()) {
+        for (Rover rover : roverRepo.getAll()) {
             if (!rover.getId().equalsIgnoreCase(currentRoverId) && rover.getPosition().isColliding(p))
                 throw new RoverCollisionException("Collision occurred. Rest of the commands aborted.");
         }
@@ -83,7 +71,7 @@ public class RoverService {
 
     private Map<String, String[]> addRoversToRepo(RoverRequest roverRequest) {
         Map<String, String[]> roverCommands = new HashMap<>();
-        for (RoverRequestSingle request:roverRequest.getRovers()) {
+        for (RoverRequestSingle request : roverRequest.getRovers()) {
             Rover rover = new Rover();
             rover.setId(UUID.randomUUID().toString());
             rover.setName(request.getName());
@@ -101,7 +89,7 @@ public class RoverService {
 
     private void checkForCollision(RoverRequest roverRequest) {
         Set<String> positions = new HashSet<>();
-        for (RoverRequestSingle request:roverRequest.getRovers()) {
+        for (RoverRequestSingle request : roverRequest.getRovers()) {
             String newPosition = request.getX() + "#" + request.getY();
             newPosition = newPosition.toUpperCase();
             if (positions.contains(newPosition)) {
@@ -112,11 +100,11 @@ public class RoverService {
     }
 
     private void checkForInvalidInput(RoverRequest roverRequest) {
-        for (RoverRequestSingle request:roverRequest.getRovers()) {
+        for (RoverRequestSingle request : roverRequest.getRovers()) {
             String[] commands = request.getCommand().split(",");
-            for (String command: commands) {
-                if (!validCommands.contains(command.toUpperCase()))
-                    throw new RuntimeException("Invalid commands provided in the input.");
+            for (String command : commands) {
+                if (!RoverConstants.validCommands.contains(command.toUpperCase()))
+                    throw new RoverException("Invalid commands provided in the input.");
             }
         }
     }

@@ -1,7 +1,6 @@
 package com.mars.rover.controller;
 
 import com.mars.rover.RoverResponse;
-import com.mars.rover.entity.Rover;
 import com.mars.rover.request.RoverRequest;
 import com.mars.rover.service.RoverService;
 import org.slf4j.Logger;
@@ -13,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 
 @RestController
 public class RoverController {
